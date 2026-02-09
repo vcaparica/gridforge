@@ -1,0 +1,89 @@
+/**
+ * GridForge Theme: Felt
+ * Dark green felt table surface — classic card-game table aesthetic.
+ *
+ * Usage: import alongside the base gridforge.css stylesheet.
+ *   <link rel="stylesheet" href="gridforge.css">
+ *   <link rel="stylesheet" href="themes/theme-felt.css">
+ */
+
+:root {
+  /* Grid */
+  --gf-grid-bg: #1a3a1a;
+  --gf-grid-border-radius: 16px;
+  --gf-grid-padding: 18px;
+  --gf-grid-shadow: 0 8px 32px rgba(0, 0, 0, 0.5),
+                     inset 0 1px 0 rgba(255, 255, 255, 0.04);
+
+  /* Cells */
+  --gf-cell-bg: linear-gradient(145deg, #1f4a1f, #1a3a1a);
+  --gf-cell-border: 1px solid rgba(255, 255, 255, 0.04);
+  --gf-cell-border-radius: 6px;
+  --gf-cell-hover-bg: linear-gradient(145deg, #245a24, #1f4a1f);
+  --gf-cell-hover-border: 1px solid rgba(255, 255, 255, 0.08);
+
+  /* Focus — warm gold, high contrast against green */
+  --gf-focus-ring: 0 0 0 3px #ffd54f, 0 0 12px rgba(255, 213, 79, 0.3);
+  --gf-focus-ring-offset: 2px;
+
+  /* Drop targets — lighter emerald glow */
+  --gf-drop-target-bg: linear-gradient(145deg, #26602a, #1e4e22);
+  --gf-drop-target-border: 2px solid rgba(129, 199, 132, 0.6);
+  --gf-drop-target-glow: 0 0 16px rgba(129, 199, 132, 0.25);
+
+  /* Invalid drop — warm red on green felt */
+  --gf-drop-invalid-border: 2px solid rgba(239, 83, 80, 0.55);
+  --gf-drop-invalid-glow: 0 0 12px rgba(239, 83, 80, 0.2);
+
+  /* Grabbed item — gold outline on green */
+  --gf-grabbed-opacity: 0.7;
+  --gf-grabbed-outline: 2px dashed rgba(255, 215, 0, 0.75);
+  --gf-grabbed-scale: 1.06;
+  --gf-grabbed-shadow: 0 10px 28px rgba(0, 0, 0, 0.5);
+
+  /* Item / Card */
+  --gf-item-border-radius: 6px;
+  --gf-item-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
+  --gf-item-hover-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+
+  /* Card back — deep forest with gold accent */
+  --gf-card-back-bg: linear-gradient(135deg, #1a3a1a, #0e260e);
+  --gf-card-back-pattern: repeating-conic-gradient(
+    rgba(255, 215, 0, 0.03) 0% 25%, transparent 0% 50%
+  ) 0 0 / 16px 16px;
+
+  /* Blocked cells — darker hatching on felt */
+  --gf-blocked-bg: repeating-linear-gradient(
+    45deg,
+    rgba(0, 0, 0, 0.12),
+    rgba(0, 0, 0, 0.12) 4px,
+    transparent 4px,
+    transparent 8px
+  );
+  --gf-blocked-opacity: 0.4;
+}
+
+/* Fabric-like texture overlay on the grid surface */
+.gf-grid {
+  background:
+    /* Subtle noise / weave pattern */
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.01) 0px,
+      transparent 1px,
+      transparent 3px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.01) 0px,
+      transparent 1px,
+      transparent 3px
+    ),
+    /* Soft radial highlight at center — table lamp effect */
+    radial-gradient(
+      ellipse at 50% 40%,
+      rgba(80, 160, 80, 0.12) 0%,
+      transparent 70%
+    ),
+    var(--gf-grid-bg);
+}
