@@ -109,12 +109,19 @@ describe('AriaPropsBuilder', () => {
   // ── cellProps ───────────────────────────────────────────────────────
 
   describe('cellProps', () => {
-    it('returns role="gridcell" with tabindex="-1" for an empty unfocused cell', () => {
+    it('returns role="gridcell" with tabindex="-1" for an empty unfocused 2D cell', () => {
       const cell = makeCell();
       const props = AriaPropsBuilder.cellProps(cell, [], false, false, false, '2d');
 
       expect(props['role']).toBe('gridcell');
       expect(props['tabIndex']).toBe('-1');
+    });
+
+    it('returns role="option" for a 1D grid cell', () => {
+      const cell = makeCell();
+      const props = AriaPropsBuilder.cellProps(cell, [], false, false, false, '1d');
+
+      expect(props['role']).toBe('option');
     });
 
     it('empty cell aria-label contains "Empty"', () => {

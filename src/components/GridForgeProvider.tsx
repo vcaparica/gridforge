@@ -111,8 +111,30 @@ function takeSnapshot(engine: GridEngine): EngineState {
     });
   }
 
+  // Deep-copy grid states so that cell mutations (itemIds changes, isBlocked
+  // toggles) are detected by React's referential equality checks.
+  const gridsCopy = new Map<string, import('../core/types.ts').GridState>();
+  for (const [gridId, grid] of engineState.grids) {
+    const cellsCopy = new Map<string, import('../core/types.ts').CellState>();
+    for (const [cellKey, cell] of grid.cells) {
+      cellsCopy.set(cellKey, {
+        coordinates: { column: cell.coordinates.column, row: cell.coordinates.row },
+        itemIds: [...cell.itemIds],
+        isDropTarget: cell.isDropTarget,
+        isBlocked: cell.isBlocked,
+        metadata: { ...cell.metadata },
+      });
+    }
+    gridsCopy.set(gridId, {
+      config: { ...grid.config },
+      cells: cellsCopy,
+      itemIds: new Set(grid.itemIds),
+      isRendered: grid.isRendered,
+    });
+  }
+
   return {
-    grids: new Map(engineState.grids),
+    grids: gridsCopy,
     items: itemsCopy,
     focusedGridId: engineState.focusedGridId,
     focusedCell: engineState.focusedCell

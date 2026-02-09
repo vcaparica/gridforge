@@ -432,7 +432,7 @@ export class GridEngine implements GridEngineReadonly {
         item: { ...item },
         fromGrid: item.gridId,
         fromCoords: { column: item.coordinates.column, row: item.coordinates.row },
-        reason: 'Target is out of bounds',
+        reason: 'outOfBounds',
       });
       this.emit(event);
       return { success: false, error: 'Target is out of bounds', event };
@@ -457,7 +457,7 @@ export class GridEngine implements GridEngineReadonly {
         item: { ...item },
         fromGrid: item.gridId,
         fromCoords: { column: item.coordinates.column, row: item.coordinates.row },
-        reason: 'No available cell in that direction',
+        reason: 'noAvailableCell',
       });
       this.emit(event);
       return { success: false, error: 'No available cell in that direction', event };
@@ -518,7 +518,7 @@ export class GridEngine implements GridEngineReadonly {
         fromCoords: { column: item.coordinates.column, row: item.coordinates.row },
         toGrid: gridId,
         toCoords: coords,
-        reason: 'Target cell is blocked',
+        reason: 'blocked',
       });
       this.emit(event);
       return { success: false, error: 'Target cell is blocked', event };
@@ -596,7 +596,7 @@ export class GridEngine implements GridEngineReadonly {
           fromCoords: { column: item.coordinates.column, row: item.coordinates.row },
           toGrid: destGridId,
           toCoords: targetCoords,
-          reason: resolution.message ?? 'Cell is occupied',
+          reason: 'occupied',
         });
         this.emit(event);
         return { success: false, error: resolution.message ?? 'Cell is occupied', event };

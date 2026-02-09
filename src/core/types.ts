@@ -141,6 +141,9 @@ export interface GridEvent {
 // === Direction ===
 export type Direction = 'up' | 'down' | 'left' | 'right';
 
+// === Move Blocked Reasons ===
+export type MoveBlockedReason = 'outOfBounds' | 'noAvailableCell' | 'occupied' | 'blocked';
+
 // === Results ===
 export interface Result {
   success: boolean;

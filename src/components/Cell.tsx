@@ -107,8 +107,12 @@ export const Cell: React.FC<CellProps> = ({
           engine.drop();
         } else {
           // Move to target cell (handles same-grid and cross-grid + conflict resolution)
-          engine.moveGrabbedTo(gridId, coordinates);
-          engine.drop();
+          const moveResult = engine.moveGrabbedTo(gridId, coordinates);
+          if (moveResult.success) {
+            engine.drop();
+          }
+          // On failure, keep the item grabbed so the user can try another cell.
+          // The engine already emitted a moveBlocked event for the screen reader.
         }
       }
       return;
@@ -162,16 +166,15 @@ export const Cell: React.FC<CellProps> = ({
           extraProps.className = classes.join(' ');
         }
 
-        // Cascade: position items with top offset (except the last/topmost)
+        // Cascade: position every item with a top offset so each peeks out
+        // below the one above it.
         if (stackDisplay === 'cascade') {
-          const childCount = Children.count(children);
-          if (index < childCount - 1) {
-            const existingStyle = (child.props as Record<string, unknown>).style as CSSProperties | undefined;
-            extraProps.style = {
-              ...existingStyle,
-              top: index * CASCADE_SLICE,
-            };
-          }
+          const existingStyle = (child.props as Record<string, unknown>).style as CSSProperties | undefined;
+          extraProps.style = {
+            ...existingStyle,
+            position: 'relative' as const,
+            top: index * CASCADE_SLICE,
+          };
         }
 
         if (Object.keys(extraProps).length === 0) return child;

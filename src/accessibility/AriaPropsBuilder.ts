@@ -72,11 +72,12 @@ export class AriaPropsBuilder {
     const { column, row } = cell.coordinates;
     const props: Record<string, string> = {};
 
-    // Role
+    // Role: 2D grids use 'gridcell' (inside role="grid" > role="row");
+    // 1D grids use 'option' (inside role="listbox").
     if (gridType === '2d') {
       props['role'] = 'gridcell';
     } else {
-      props['role'] = 'gridcell';
+      props['role'] = 'option';
     }
 
     // Column/row indices

@@ -269,6 +269,43 @@ describe('AnnouncementBuilder', () => {
       expect(announcement.text).toContain('face up');
     });
 
+    it('moveBlocked with reason "blocked" does not produce out-of-bounds text', () => {
+      const event: GridEvent = {
+        type: 'moveBlocked',
+        timestamp: Date.now(),
+        reason: 'blocked',
+        toCoords: { column: 3, row: 2 },
+        toGrid: 'grid-1',
+      };
+      const announcement = builder.build(event, engine);
+      expect(announcement.text.length).toBeGreaterThan(0);
+      expect(announcement.text).not.toBe(DEFAULT_MESSAGES.moveBlockedOutOfBounds);
+    });
+
+    it('moveBlocked with reason "occupied" mentions another item', () => {
+      const event: GridEvent = {
+        type: 'moveBlocked',
+        timestamp: Date.now(),
+        reason: 'occupied',
+        toCoords: { column: 3, row: 2 },
+        toGrid: 'grid-1',
+        gridId: 'grid-1',
+      };
+      const announcement = builder.build(event, engine);
+      expect(announcement.text.length).toBeGreaterThan(0);
+      expect(announcement.text).not.toBe(DEFAULT_MESSAGES.moveBlockedOutOfBounds);
+    });
+
+    it('moveBlocked with reason "noAvailableCell" uses out-of-bounds text', () => {
+      const event: GridEvent = {
+        type: 'moveBlocked',
+        timestamp: Date.now(),
+        reason: 'noAvailableCell',
+      };
+      const announcement = builder.build(event, engine);
+      expect(announcement.text).toBe(DEFAULT_MESSAGES.moveBlockedOutOfBounds);
+    });
+
     it('itemTransferred contains the target grid label', () => {
       const targetGrid = makeGridState({
         config: {

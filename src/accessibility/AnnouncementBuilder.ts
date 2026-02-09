@@ -361,7 +361,7 @@ export class AnnouncementBuilder {
   private buildMoveBlocked(event: GridEvent, engine: GridEngineReadonly): string {
     const reason = event.reason;
 
-    if (reason === 'outOfBounds') {
+    if (reason === 'outOfBounds' || reason === 'noAvailableCell') {
       return this.catalog.moveBlockedOutOfBounds;
     }
 

@@ -55,6 +55,7 @@ export const Grid: React.FC<GridProps> = ({
 
   const { engine, state } = useGridForge();
   const containerRef = useRef<HTMLDivElement>(null);
+  const prevBlockedKeysRef = useRef<Set<string>>(new Set());
 
   // -- Help dialog and context menu state -----------------------------------
   const [_showHelp, setShowHelp] = useState(false);
@@ -73,9 +74,6 @@ export const Grid: React.FC<GridProps> = ({
     onShowHelp: handleShowHelp,
     onContextMenu: handleContextMenu,
   });
-
-  // -- Blocked cells: mark in engine on registration -----------------------
-  // blockedCells are applied during grid registration/effect below.
 
   // -- Register / unregister grid with engine -------------------------------
   useEffect(() => {
@@ -100,35 +98,6 @@ export const Grid: React.FC<GridProps> = ({
     // Mark as rendered so keyboard and grab operations work
     engine.setGridRendered(id, true);
 
-    // After registration, mark blocked cells in the engine by creating
-    // cells and setting isBlocked on them.
-    if (blockedCells) {
-      for (const coords of blockedCells) {
-        // getOrCreateCell is private, so we use getItemsAt to force cell
-        // existence indirectly -- but the cleanest path is to access the
-        // grid state and ensure cells exist.  Since we have direct access
-        // to the grid state object (Maps are by reference), we can create
-        // the cell entries ourselves.
-        const grid = engine.getGrid(id);
-        if (grid) {
-          const key = CoordinateSystem.toKey(coords);
-          let cell = grid.cells.get(key);
-          if (!cell) {
-            cell = {
-              coordinates: { column: coords.column, row: coords.row },
-              itemIds: [],
-              isDropTarget: false,
-              isBlocked: true,
-              metadata: {},
-            };
-            grid.cells.set(key, cell);
-          } else {
-            cell.isBlocked = true;
-          }
-        }
-      }
-    }
-
     return () => {
       // On unmount: mark as not rendered, but do NOT unregister.
       // Items persist even when the grid is not rendered.
@@ -137,6 +106,51 @@ export const Grid: React.FC<GridProps> = ({
     // We intentionally depend only on `id` for registration lifecycle.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, engine]);
+
+  // -- Blocked cells: mark/unmark when the blockedCells prop changes --------
+  useEffect(() => {
+    const grid = engine.getGrid(id);
+    if (!grid) return;
+
+    const newBlockedKeys = new Set<string>();
+    if (blockedCells) {
+      for (const coords of blockedCells) {
+        newBlockedKeys.add(CoordinateSystem.toKey(coords));
+      }
+    }
+
+    // Unblock cells that were previously blocked but are no longer in the list
+    for (const oldKey of prevBlockedKeysRef.current) {
+      if (!newBlockedKeys.has(oldKey)) {
+        const cell = grid.cells.get(oldKey);
+        if (cell) {
+          cell.isBlocked = false;
+        }
+      }
+    }
+
+    // Block new cells
+    if (blockedCells) {
+      for (const coords of blockedCells) {
+        const key = CoordinateSystem.toKey(coords);
+        let cell = grid.cells.get(key);
+        if (!cell) {
+          cell = {
+            coordinates: { column: coords.column, row: coords.row },
+            itemIds: [],
+            isDropTarget: false,
+            isBlocked: true,
+            metadata: {},
+          };
+          grid.cells.set(key, cell);
+        } else {
+          cell.isBlocked = true;
+        }
+      }
+    }
+
+    prevBlockedKeysRef.current = newBlockedKeys;
+  }, [id, engine, blockedCells]);
 
   // -- Focus management: set focused grid when container receives focus -----
   const handleFocus = useCallback(
