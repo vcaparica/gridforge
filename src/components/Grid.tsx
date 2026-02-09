@@ -7,7 +7,7 @@ import React, {
   type ReactNode,
   type CSSProperties,
 } from 'react';
-import type { Coordinates, ItemState } from '../core/types.ts';
+import type { Coordinates, ItemState, StackDisplay } from '../core/types.ts';
 import { CoordinateSystem } from '../core/CoordinateSystem.ts';
 import { AriaPropsBuilder } from '../accessibility/AriaPropsBuilder.ts';
 import { useGridForge } from '../hooks/useGridForge.ts';
@@ -25,6 +25,7 @@ export interface GridProps {
   description?: string;
   allowStacking?: boolean;    // default false
   maxStackSize?: number;
+  stackDisplay?: StackDisplay; // default 'overlap'
   blockedCells?: Coordinates[];
   renderCell: (coords: Coordinates, items: ItemState[]) => ReactNode;
   className?: string;
@@ -43,6 +44,7 @@ export const Grid: React.FC<GridProps> = ({
   description,
   allowStacking = false,
   maxStackSize,
+  stackDisplay = 'overlap',
   blockedCells,
   renderCell,
   className,
@@ -198,6 +200,7 @@ export const Grid: React.FC<GridProps> = ({
         onFocus={handleFocus}
         data-gf-grid-id={id}
         data-gf-grid-type="2d"
+        data-gf-stack-display={stackDisplay}
       >
         {Array.from({ length: rows }, (_, rowIdx) => {
           const rowNumber = rowIdx + 1;
@@ -246,6 +249,7 @@ export const Grid: React.FC<GridProps> = ({
       onFocus={handleFocus}
       data-gf-grid-id={id}
       data-gf-grid-type="1d"
+      data-gf-stack-display={stackDisplay}
     >
       {Array.from({ length: columns }, (_, colIdx) => {
         const colNumber = colIdx + 1;

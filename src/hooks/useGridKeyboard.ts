@@ -33,12 +33,16 @@ export function useGridKeyboard(
         }
 
         case 'grab': {
-          // Find the top item at the focused cell
+          // Find the item at the focused cell to grab — use selectedStackIndex
+          // if cycling through a stack, otherwise default to topmost item.
           if (state.focusedCell) {
             const items = engine.getItemsAt(gridId, state.focusedCell);
             if (items.length > 0) {
-              // Grab the last (topmost) item
-              engine.grab(items[items.length - 1].id);
+              const idx = state.selectedStackIndex;
+              const target = (idx !== null && idx >= 0 && idx < items.length)
+                ? items[idx]
+                : items[items.length - 1];
+              engine.grab(target.id);
             }
           }
           event.preventDefault();
@@ -67,7 +71,11 @@ export function useGridKeyboard(
           if (state.focusedCell) {
             const items = engine.getItemsAt(gridId, state.focusedCell);
             if (items.length > 0) {
-              engine.removeItem(items[items.length - 1].id);
+              const idx = state.selectedStackIndex;
+              const target = (idx !== null && idx >= 0 && idx < items.length)
+                ? items[idx]
+                : items[items.length - 1];
+              engine.removeItem(target.id);
             }
           }
           event.preventDefault();
@@ -78,7 +86,11 @@ export function useGridKeyboard(
           if (state.focusedCell) {
             const items = engine.getItemsAt(gridId, state.focusedCell);
             if (items.length > 0) {
-              engine.tapClockwise(items[items.length - 1].id);
+              const idx = state.selectedStackIndex;
+              const target = (idx !== null && idx >= 0 && idx < items.length)
+                ? items[idx]
+                : items[items.length - 1];
+              engine.tapClockwise(target.id);
             }
           }
           event.preventDefault();
@@ -89,7 +101,11 @@ export function useGridKeyboard(
           if (state.focusedCell) {
             const items = engine.getItemsAt(gridId, state.focusedCell);
             if (items.length > 0) {
-              engine.tapCounterClockwise(items[items.length - 1].id);
+              const idx = state.selectedStackIndex;
+              const target = (idx !== null && idx >= 0 && idx < items.length)
+                ? items[idx]
+                : items[items.length - 1];
+              engine.tapCounterClockwise(target.id);
             }
           }
           event.preventDefault();
@@ -100,9 +116,19 @@ export function useGridKeyboard(
           if (state.focusedCell) {
             const items = engine.getItemsAt(gridId, state.focusedCell);
             if (items.length > 0) {
-              engine.flipItem(items[items.length - 1].id);
+              const idx = state.selectedStackIndex;
+              const target = (idx !== null && idx >= 0 && idx < items.length)
+                ? items[idx]
+                : items[items.length - 1];
+              engine.flipItem(target.id);
             }
           }
+          event.preventDefault();
+          break;
+        }
+
+        case 'cycleStack': {
+          engine.cycleStackSelection(action.direction);
           event.preventDefault();
           break;
         }

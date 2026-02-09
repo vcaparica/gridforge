@@ -9,7 +9,7 @@ export type { CellProps } from './components/Cell.tsx';
 export { Item } from './components/Item.tsx';
 export type { ItemProps } from './components/Item.tsx';
 export { ItemTray } from './components/ItemTray.tsx';
-export type { ItemTrayProps } from './components/ItemTray.tsx';
+export type { ItemTrayProps, ElasticMode } from './components/ItemTray.tsx';
 export { HelpDialog } from './components/HelpDialog.tsx';
 export type { HelpDialogProps } from './components/HelpDialog.tsx';
 export { ContextMenu } from './components/ContextMenu.tsx';
@@ -65,6 +65,7 @@ export type {
   Result,
   MoveResult,
   GridEngineReadonly,
+  StackDisplay,
 } from './core/types.ts';
 
 // Styles: import directly from 'gridforge/styles/gridforge.css'

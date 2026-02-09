@@ -11,6 +11,7 @@ export type KeyAction =
   | { type: 'tapCounterClockwise' }
   | { type: 'flipItem' }
   | { type: 'cycleGrid'; direction: 'next' | 'previous' }
+  | { type: 'cycleStack'; direction: 'next' | 'previous' }
   | { type: 'jumpStart' }
   | { type: 'jumpEnd' }
   | { type: 'jumpGridStart' }
@@ -77,6 +78,15 @@ function resolveNavigationAction(event: KeyEvent): KeyAction {
   }
   if (key === 'End') {
     return ctrlKey ? { type: 'jumpGridEnd' } : { type: 'jumpEnd' };
+  }
+
+  // [ : cycle stack selection previous (deeper)
+  // ] : cycle stack selection next (toward top)
+  if (key === '[') {
+    return { type: 'cycleStack', direction: 'previous' };
+  }
+  if (key === ']') {
+    return { type: 'cycleStack', direction: 'next' };
   }
 
   // ? (Shift+/): showHelp

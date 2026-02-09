@@ -156,10 +156,11 @@ function InventoryInner() {
       </h2>
       <p style={{ color: '#6b7280', marginBottom: 8, fontSize: 14 }}>
         6x4 inventory grid. Some slots are locked (hatched).
-        Items can stack up to 5 per slot.
+        Items can stack up to 5 per slot. Items skip over locked slots when moved.
       </p>
       <p style={{ color: '#9ca3af', marginBottom: 24, fontSize: 12 }}>
         Navigate: arrow keys. Grab: Space/Enter. Drop: Space/Enter.
+        Use [ and ] to cycle through stacked items.
       </p>
 
       <Grid

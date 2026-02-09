@@ -4,6 +4,10 @@ export interface Coordinates {
   row: number;    // 1-based
 }
 
+// === Stack Display ===
+/** Visual layout for multiple items sharing a cell. */
+export type StackDisplay = 'overlap' | 'split' | 'cascade';
+
 // === Tap / Rotation ===
 // Tap angles in degrees. 0 = upright, 90 = tapped clockwise (standard MTG "tapped").
 // Supports 45-degree increments: 0, 45, 90, 135, 180, 225, 270, 315
@@ -74,6 +78,7 @@ export interface EngineState {
   grabbedFromCoords: Coordinates | null;
   mode: InteractionMode;
   activeDropTargetGridId: string | null; // during grab, which grid is the target
+  selectedStackIndex: number | null; // index into focused cell's itemIds for stack cycling
 }
 
 // === Conflict Resolution ===
@@ -111,6 +116,7 @@ export type GridEventType =
   | 'grabCancelled'
   | 'moveBlocked'
   | 'focusMoved'
+  | 'stackSelectionChanged' // selected item within a stacked cell changed
   | 'gridRegistered'
   | 'gridUnregistered'
   | 'gridRenderStateChanged';
@@ -129,6 +135,7 @@ export interface GridEvent {
   displacedItems?: Array<{ item: ItemState; to: Coordinates }>;
   reason?: string; // for moveBlocked
   gridId?: string; // for grid events
+  selectedStackIndex?: number | null; // for stackSelectionChanged
 }
 
 // === Direction ===

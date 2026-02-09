@@ -121,6 +121,17 @@ describe('KeyboardHandler — resolveKeyAction', () => {
       expect(action).toEqual({ type: 'contextMenu' });
     });
 
+    // [ and ] → cycleStack
+    it('[ → cycleStack previous', () => {
+      const action = resolveKeyAction(mode, key('['));
+      expect(action).toEqual({ type: 'cycleStack', direction: 'previous' });
+    });
+
+    it('] → cycleStack next', () => {
+      const action = resolveKeyAction(mode, key(']'));
+      expect(action).toEqual({ type: 'cycleStack', direction: 'next' });
+    });
+
     // Tab / Shift+Tab → none (let browser handle)
     it('Tab → none', () => {
       const action = resolveKeyAction(mode, key('Tab'));

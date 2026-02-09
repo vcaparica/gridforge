@@ -106,7 +106,8 @@ function BattleMapInner() {
       </h2>
       <p style={{ color: '#7a5a3a', marginBottom: 24, fontSize: 14 }}>
         Move tokens on the 8x6 grid. Grab with Space/Enter, move with arrows, drop with Space/Enter.
-        Tokens swap when colliding.
+        Tokens swap when colliding. Click a token to grab it, then click any cell to drop it there.
+        Use Tab while grabbing to move tokens between the grid and reserve.
       </p>
 
       <Grid

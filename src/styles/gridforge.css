@@ -279,6 +279,56 @@
   z-index: 2;
 }
 
+/* --- Stacked cells ------------------------------------------------------- */
+
+.gf-cell--stacked {
+  overflow: visible;
+}
+
+/* Stack display: split — items share cell space equally */
+[data-gf-stack-display="split"] .gf-cell--stacked {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  justify-content: stretch;
+}
+
+[data-gf-stack-display="split"] .gf-cell--stacked > .gf-item {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* Stack display: cascade — items cascade vertically with offsets.
+   Each item shows a top slice (--gf-cascade-slice, default 16px).
+   Items are positioned with top offsets via inline style (set by Cell). */
+[data-gf-stack-display="cascade"] .gf-cell--stacked {
+  position: relative;
+  display: block;
+  overflow: visible;
+}
+
+[data-gf-stack-display="cascade"] .gf-cell--stacked > .gf-item {
+  position: absolute;
+  left: 0;
+  right: 0;
+  cursor: pointer;
+  transition: outline 0.1s ease, box-shadow 0.1s ease;
+}
+
+/* The topmost (last) item in a cascade is fully visible and relatively positioned */
+[data-gf-stack-display="cascade"] .gf-cell--stacked > .gf-item:last-child {
+  position: relative;
+}
+
+/* Stack selection highlight */
+.gf-item--stack-selected {
+  outline: 2px solid rgba(91, 141, 239, 0.9);
+  outline-offset: -1px;
+  z-index: 10;
+  box-shadow: 0 0 12px rgba(91, 141, 239, 0.4);
+}
+
 /* ==========================================================================
    7. Items (Generic game pieces)
    ========================================================================== */
@@ -389,6 +439,47 @@
 
 .gf-tray--vertical {
   flex-direction: column;
+  overflow-y: auto;
+}
+
+/* --- Elastic tray modes -------------------------------------------------- */
+
+.gf-tray--elastic {
+  flex-wrap: nowrap;
+}
+
+/* scroll: items keep full size, tray scrolls on overflow */
+.gf-tray--elastic-scroll.gf-tray--horizontal {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.gf-tray--elastic-scroll.gf-tray--vertical {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* shrink: items shrink to fit within the tray (down to min size) */
+.gf-tray--elastic-shrink > .gf-cell {
+  flex: 1 1 0;
+  min-width: var(--gf-tray-min-item-size, 40px);
+  min-height: var(--gf-tray-min-item-size, 40px);
+}
+
+/* scroll-shrink: items shrink first, then tray scrolls */
+.gf-tray--elastic-scroll-shrink > .gf-cell {
+  flex: 1 1 0;
+  min-width: var(--gf-tray-min-item-size, 40px);
+  min-height: var(--gf-tray-min-item-size, 40px);
+}
+
+.gf-tray--elastic-scroll-shrink.gf-tray--horizontal {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.gf-tray--elastic-scroll-shrink.gf-tray--vertical {
+  overflow-x: hidden;
   overflow-y: auto;
 }
 

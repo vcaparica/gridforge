@@ -67,6 +67,7 @@ const ALL_EVENT_TYPES: GridEventType[] = [
   'grabCancelled',
   'moveBlocked',
   'focusMoved',
+  'stackSelectionChanged',
   'gridRegistered',
   'gridUnregistered',
   'gridRenderStateChanged',
@@ -124,6 +125,7 @@ function takeSnapshot(engine: GridEngine): EngineState {
       : null,
     mode: engineState.mode,
     activeDropTargetGridId: engineState.activeDropTargetGridId,
+    selectedStackIndex: engineState.selectedStackIndex,
   };
 }
 

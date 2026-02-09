@@ -46,6 +46,7 @@ export class GridEngine implements GridEngineReadonly {
       grabbedFromCoords: null,
       mode: 'navigation',
       activeDropTargetGridId: null,
+      selectedStackIndex: null,
     };
 
     this.listeners = new Map();
@@ -420,8 +421,8 @@ export class GridEngine implements GridEngineReadonly {
       return { success: false, error: `Grid "${item.gridId}" no longer exists` };
     }
 
-    // Compute target coordinates
-    const targetCoords = CoordinateSystem.adjacent(item.coordinates, direction);
+    // Compute target coordinates, skipping over blocked cells
+    let targetCoords = CoordinateSystem.adjacent(item.coordinates, direction);
 
     // Bounds check
     if (!CoordinateSystem.isValid(targetCoords, grid.config)) {
@@ -437,20 +438,29 @@ export class GridEngine implements GridEngineReadonly {
       return { success: false, error: 'Target is out of bounds', event };
     }
 
-    // Check for blocked cell
-    const targetKey = CoordinateSystem.toKey(targetCoords);
-    const targetCell = grid.cells.get(targetKey);
-    if (targetCell && targetCell.isBlocked) {
+    // Skip over blocked cells: keep advancing in the same direction until we
+    // find an unblocked cell or go out of bounds.
+    while (CoordinateSystem.isValid(targetCoords, grid.config)) {
+      const targetKey = CoordinateSystem.toKey(targetCoords);
+      const targetCell = grid.cells.get(targetKey);
+      if (!targetCell || !targetCell.isBlocked) {
+        break; // found a non-blocked cell (or empty sparse cell)
+      }
+      targetCoords = CoordinateSystem.adjacent(targetCoords, direction);
+    }
+
+    // If we went out of bounds while skipping blocked cells, block the move
+    if (!CoordinateSystem.isValid(targetCoords, grid.config)) {
       const event = this.createEvent({
         type: 'moveBlocked',
         itemId: item.id,
         item: { ...item },
         fromGrid: item.gridId,
         fromCoords: { column: item.coordinates.column, row: item.coordinates.row },
-        reason: 'Target cell is blocked',
+        reason: 'No available cell in that direction',
       });
       this.emit(event);
-      return { success: false, error: 'Target cell is blocked', event };
+      return { success: false, error: 'No available cell in that direction', event };
     }
 
     // Get occupants at the target cell
@@ -1067,6 +1077,9 @@ export class GridEngine implements GridEngineReadonly {
 
     this.state.focusedCell = { column: coords.column, row: coords.row };
 
+    // Reset stack selection when focus moves to a different cell
+    this.state.selectedStackIndex = null;
+
     // Emit focusMoved so the React layer can sync state
     const event = this.createEvent({
       type: 'focusMoved',
@@ -1095,6 +1108,9 @@ export class GridEngine implements GridEngineReadonly {
     const fromCoords = { column: this.state.focusedCell.column, row: this.state.focusedCell.row };
     this.state.focusedCell = { column: newCoords.column, row: newCoords.row };
 
+    // Reset stack selection when focus moves
+    this.state.selectedStackIndex = null;
+
     const event = this.createEvent({
       type: 'focusMoved',
       gridId: this.state.focusedGridId,
@@ -1105,6 +1121,63 @@ export class GridEngine implements GridEngineReadonly {
     this.emit(event);
 
     return { column: newCoords.column, row: newCoords.row };
+  }
+
+  // =========================================================================
+  // Stack Selection
+  // =========================================================================
+
+  /**
+   * Cycles the selected item index within the focused cell's stack.
+   * direction: 'next' cycles forward (toward the top), 'previous' backward.
+   * If no stack index is set, starts at the topmost item.
+   */
+  cycleStackSelection(direction: 'next' | 'previous'): Result {
+    if (this.state.focusedGridId === null || this.state.focusedCell === null) {
+      return { success: false, error: 'No cell is focused' };
+    }
+
+    const items = this.getItemsAt(this.state.focusedGridId, this.state.focusedCell);
+    if (items.length <= 1) {
+      return { success: false, error: 'Cell does not have multiple items to cycle' };
+    }
+
+    const count = items.length;
+    let newIndex: number;
+
+    if (this.state.selectedStackIndex === null) {
+      // Start from the top item; 'next' wraps to bottom, 'previous' goes to second-from-top
+      newIndex = direction === 'next' ? count - 2 : 0;
+    } else {
+      if (direction === 'next') {
+        newIndex = (this.state.selectedStackIndex - 1 + count) % count;
+      } else {
+        newIndex = (this.state.selectedStackIndex + 1) % count;
+      }
+    }
+
+    this.state.selectedStackIndex = newIndex;
+
+    const selectedItem = items[newIndex];
+    const event = this.createEvent({
+      type: 'stackSelectionChanged',
+      gridId: this.state.focusedGridId,
+      itemId: selectedItem?.id,
+      item: selectedItem ? { ...selectedItem } : undefined,
+      selectedStackIndex: newIndex,
+    });
+
+    this.emit(event);
+
+    return { success: true, event };
+  }
+
+  getSelectedStackIndex(): number | null {
+    return this.state.selectedStackIndex;
+  }
+
+  setSelectedStackIndex(index: number | null): void {
+    this.state.selectedStackIndex = index;
   }
 
   getFocusedCell(): { gridId: string; coords: Coordinates } | null {

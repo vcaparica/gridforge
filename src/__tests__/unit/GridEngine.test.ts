@@ -868,4 +868,186 @@ describe('GridEngine', () => {
       });
     });
   });
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // Blocked Cell Skipping
+  // ═══════════════════════════════════════════════════════════════════════
+
+  describe('Blocked Cell Skipping', () => {
+    it('should skip over a single blocked cell', () => {
+      const engine = new GridEngine({ conflictStrategy: 'block' });
+      engine.registerGrid(makeGridConfig({ columns: 5, rows: 1 }));
+      engine.setGridRendered('grid1', true);
+      engine.addItem(makeItem(), 'grid1', { column: 1, row: 1 });
+
+      // Block column 2
+      const grid = engine.getGrid('grid1')!;
+      grid.cells.set('2,1', {
+        coordinates: { column: 2, row: 1 },
+        itemIds: [],
+        isDropTarget: false,
+        isBlocked: true,
+        metadata: {},
+      });
+
+      engine.grab('item1');
+      const result = engine.moveGrabbed('right');
+      expect(result.success).toBe(true);
+      // Should land on column 3, skipping the blocked column 2
+      expect(engine.getItem('item1')!.coordinates).toEqual({ column: 3, row: 1 });
+    });
+
+    it('should skip over multiple consecutive blocked cells', () => {
+      const engine = new GridEngine({ conflictStrategy: 'block' });
+      engine.registerGrid(makeGridConfig({ columns: 5, rows: 1 }));
+      engine.setGridRendered('grid1', true);
+      engine.addItem(makeItem(), 'grid1', { column: 1, row: 1 });
+
+      // Block columns 2 and 3
+      const grid = engine.getGrid('grid1')!;
+      grid.cells.set('2,1', {
+        coordinates: { column: 2, row: 1 },
+        itemIds: [],
+        isDropTarget: false,
+        isBlocked: true,
+        metadata: {},
+      });
+      grid.cells.set('3,1', {
+        coordinates: { column: 3, row: 1 },
+        itemIds: [],
+        isDropTarget: false,
+        isBlocked: true,
+        metadata: {},
+      });
+
+      engine.grab('item1');
+      const result = engine.moveGrabbed('right');
+      expect(result.success).toBe(true);
+      expect(engine.getItem('item1')!.coordinates).toEqual({ column: 4, row: 1 });
+    });
+
+    it('should block if all cells in direction are blocked or out of bounds', () => {
+      const engine = new GridEngine({ conflictStrategy: 'block' });
+      engine.registerGrid(makeGridConfig({ columns: 3, rows: 1 }));
+      engine.setGridRendered('grid1', true);
+      engine.addItem(makeItem(), 'grid1', { column: 1, row: 1 });
+
+      // Block columns 2 and 3
+      const grid = engine.getGrid('grid1')!;
+      grid.cells.set('2,1', {
+        coordinates: { column: 2, row: 1 },
+        itemIds: [],
+        isDropTarget: false,
+        isBlocked: true,
+        metadata: {},
+      });
+      grid.cells.set('3,1', {
+        coordinates: { column: 3, row: 1 },
+        itemIds: [],
+        isDropTarget: false,
+        isBlocked: true,
+        metadata: {},
+      });
+
+      engine.grab('item1');
+      const result = engine.moveGrabbed('right');
+      expect(result.success).toBe(false);
+      expect(engine.getItem('item1')!.coordinates).toEqual({ column: 1, row: 1 });
+    });
+  });
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // Stack Selection Cycling
+  // ═══════════════════════════════════════════════════════════════════════
+
+  describe('Stack Selection Cycling', () => {
+    it('should cycle through items in a stacked cell', () => {
+      const engine = new GridEngine({ conflictStrategy: 'stack' });
+      engine.registerGrid(makeGridConfig({ allowStacking: true }));
+      engine.setGridRendered('grid1', true);
+      engine.addItem(makeItem({ id: 'a' }), 'grid1', { column: 1, row: 1 });
+      engine.addItem(makeItem({ id: 'b' }), 'grid1', { column: 1, row: 1 });
+      engine.addItem(makeItem({ id: 'c' }), 'grid1', { column: 1, row: 1 });
+
+      engine.setFocusedGrid('grid1');
+      engine.setFocusedCell({ column: 1, row: 1 });
+
+      // First cycle: should select second-from-top (index 1)
+      const r1 = engine.cycleStackSelection('next');
+      expect(r1.success).toBe(true);
+      expect(engine.getSelectedStackIndex()).toBe(1);
+
+      // Cycle again: should select bottom (index 0)
+      engine.cycleStackSelection('next');
+      expect(engine.getSelectedStackIndex()).toBe(0);
+
+      // Cycle again: should wrap to top (index 2)
+      engine.cycleStackSelection('next');
+      expect(engine.getSelectedStackIndex()).toBe(2);
+    });
+
+    it('should cycle in previous direction', () => {
+      const engine = new GridEngine({ conflictStrategy: 'stack' });
+      engine.registerGrid(makeGridConfig({ allowStacking: true }));
+      engine.setGridRendered('grid1', true);
+      engine.addItem(makeItem({ id: 'a' }), 'grid1', { column: 1, row: 1 });
+      engine.addItem(makeItem({ id: 'b' }), 'grid1', { column: 1, row: 1 });
+
+      engine.setFocusedGrid('grid1');
+      engine.setFocusedCell({ column: 1, row: 1 });
+
+      // First previous cycle: starts from top, goes to bottom (index 0)
+      engine.cycleStackSelection('previous');
+      expect(engine.getSelectedStackIndex()).toBe(0);
+    });
+
+    it('should fail on cells with 0 or 1 items', () => {
+      const engine = new GridEngine({ conflictStrategy: 'block' });
+      engine.registerGrid(makeGridConfig());
+      engine.setGridRendered('grid1', true);
+      engine.addItem(makeItem(), 'grid1', { column: 1, row: 1 });
+
+      engine.setFocusedGrid('grid1');
+      engine.setFocusedCell({ column: 1, row: 1 });
+
+      const result = engine.cycleStackSelection('next');
+      expect(result.success).toBe(false);
+    });
+
+    it('should reset selectedStackIndex when focus moves', () => {
+      const engine = new GridEngine({ conflictStrategy: 'stack' });
+      engine.registerGrid(makeGridConfig({ allowStacking: true }));
+      engine.setGridRendered('grid1', true);
+      engine.addItem(makeItem({ id: 'a' }), 'grid1', { column: 1, row: 1 });
+      engine.addItem(makeItem({ id: 'b' }), 'grid1', { column: 1, row: 1 });
+
+      engine.setFocusedGrid('grid1');
+      engine.setFocusedCell({ column: 1, row: 1 });
+      engine.cycleStackSelection('next');
+      expect(engine.getSelectedStackIndex()).not.toBeNull();
+
+      // Moving focus should reset
+      engine.moveFocus('right');
+      expect(engine.getSelectedStackIndex()).toBeNull();
+    });
+
+    it('should emit stackSelectionChanged event', () => {
+      const engine = new GridEngine({ conflictStrategy: 'stack' });
+      engine.registerGrid(makeGridConfig({ allowStacking: true }));
+      engine.setGridRendered('grid1', true);
+      engine.addItem(makeItem({ id: 'a' }), 'grid1', { column: 1, row: 1 });
+      engine.addItem(makeItem({ id: 'b' }), 'grid1', { column: 1, row: 1 });
+
+      engine.setFocusedGrid('grid1');
+      engine.setFocusedCell({ column: 1, row: 1 });
+
+      const events: GridEvent[] = [];
+      engine.on('stackSelectionChanged', (e) => events.push(e));
+
+      engine.cycleStackSelection('next');
+      expect(events).toHaveLength(1);
+      expect(events[0].type).toBe('stackSelectionChanged');
+      expect(events[0].selectedStackIndex).toBe(0);
+    });
+  });
 });
