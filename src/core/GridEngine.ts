@@ -721,6 +721,16 @@ export class GridEngine implements GridEngineReadonly {
     // Place in new cell
     this.placeItemInCell(toGridId, toCoords, item.id);
 
+    // Focus follows the grabbed item to its new position
+    if (this.state.grabbedItemId === item.id) {
+      const destGrid = this.state.grids.get(toGridId);
+      if (destGrid && destGrid.isRendered) {
+        this.state.focusedGridId = toGridId;
+        this.state.focusedCell = { column: toCoords.column, row: toCoords.row };
+        this.state.selectedStackIndex = null;
+      }
+    }
+
     const isCrossGrid = fromGrid !== toGridId;
     const eventType: GridEventType = isCrossGrid ? 'itemTransferred' : 'itemMoved';
 
@@ -803,6 +813,14 @@ export class GridEngine implements GridEngineReadonly {
 
     item.coordinates = { column: originalCoords.column, row: originalCoords.row };
     this.placeItemInCell(originalGrid, originalCoords, item.id);
+
+    // Focus follows the item back to its original position
+    const origGridState = this.state.grids.get(originalGrid);
+    if (origGridState && origGridState.isRendered) {
+      this.state.focusedGridId = originalGrid;
+      this.state.focusedCell = { column: originalCoords.column, row: originalCoords.row };
+      this.state.selectedStackIndex = null;
+    }
 
     // Clear grab state
     this.state.grabbedItemId = null;

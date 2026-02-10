@@ -957,6 +957,173 @@ describe('GridEngine', () => {
   });
 
   // ═══════════════════════════════════════════════════════════════════════
+  // Focus Follows Item During Grab Movement
+  // ═══════════════════════════════════════════════════════════════════════
+
+  describe('Focus Follows Item During Grab Movement', () => {
+    it('moveGrabbed updates focusedCell to item new position', () => {
+      const engine = new GridEngine();
+      engine.registerGrid(makeGridConfig());
+      engine.setGridRendered('grid1', true);
+      engine.addItem(makeItem(), 'grid1', { column: 3, row: 3 });
+
+      engine.setFocusedGrid('grid1');
+      engine.setFocusedCell({ column: 3, row: 3 });
+      engine.grab('item1');
+      engine.moveGrabbed('right');
+
+      const focus = engine.getFocusedCell();
+      expect(focus).not.toBeNull();
+      expect(focus!.gridId).toBe('grid1');
+      expect(focus!.coords).toEqual({ column: 4, row: 3 });
+    });
+
+    it('moveGrabbedTo cross-grid updates focusedGridId and focusedCell', () => {
+      const engine = new GridEngine();
+      engine.registerGrid(makeGridConfig({ id: 'grid1' }));
+      engine.registerGrid(makeGridConfig({ id: 'grid2' }));
+      engine.setGridRendered('grid1', true);
+      engine.setGridRendered('grid2', true);
+      engine.addItem(makeItem(), 'grid1', { column: 1, row: 1 });
+
+      engine.setFocusedGrid('grid1');
+      engine.setFocusedCell({ column: 1, row: 1 });
+      engine.grab('item1');
+      engine.moveGrabbedTo('grid2', { column: 2, row: 3 });
+
+      const focus = engine.getFocusedCell();
+      expect(focus).not.toBeNull();
+      expect(focus!.gridId).toBe('grid2');
+      expect(focus!.coords).toEqual({ column: 2, row: 3 });
+    });
+
+    it('moveGrabbedTo non-rendered grid does NOT update focus', () => {
+      const engine = new GridEngine();
+      engine.registerGrid(makeGridConfig({ id: 'grid1' }));
+      engine.registerGrid(makeGridConfig({ id: 'offscreen' }));
+      engine.setGridRendered('grid1', true);
+      // offscreen stays non-rendered
+      engine.addItem(makeItem(), 'grid1', { column: 2, row: 2 });
+
+      engine.setFocusedGrid('grid1');
+      engine.setFocusedCell({ column: 2, row: 2 });
+      engine.grab('item1');
+      engine.moveGrabbedTo('offscreen', { column: 1, row: 1 });
+
+      const focus = engine.getFocusedCell();
+      expect(focus).not.toBeNull();
+      expect(focus!.gridId).toBe('grid1');
+      expect(focus!.coords).toEqual({ column: 2, row: 2 });
+    });
+
+    it('cancelGrab restores focus to original position', () => {
+      const engine = new GridEngine();
+      engine.registerGrid(makeGridConfig());
+      engine.setGridRendered('grid1', true);
+      engine.addItem(makeItem(), 'grid1', { column: 2, row: 2 });
+
+      engine.setFocusedGrid('grid1');
+      engine.setFocusedCell({ column: 2, row: 2 });
+      engine.grab('item1');
+      engine.moveGrabbed('right');
+      engine.moveGrabbed('down');
+
+      // Focus should have followed to (3,3)
+      expect(engine.getFocusedCell()!.coords).toEqual({ column: 3, row: 3 });
+
+      engine.cancelGrab();
+
+      // Focus should return to original (2,2)
+      const focus = engine.getFocusedCell();
+      expect(focus).not.toBeNull();
+      expect(focus!.gridId).toBe('grid1');
+      expect(focus!.coords).toEqual({ column: 2, row: 2 });
+    });
+
+    it('cancelGrab cross-grid restores focus to original grid', () => {
+      const engine = new GridEngine();
+      engine.registerGrid(makeGridConfig({ id: 'grid1' }));
+      engine.registerGrid(makeGridConfig({ id: 'grid2' }));
+      engine.setGridRendered('grid1', true);
+      engine.setGridRendered('grid2', true);
+      engine.addItem(makeItem(), 'grid1', { column: 1, row: 1 });
+
+      engine.setFocusedGrid('grid1');
+      engine.setFocusedCell({ column: 1, row: 1 });
+      engine.grab('item1');
+      engine.moveGrabbedTo('grid2', { column: 3, row: 3 });
+
+      // Focus should have followed to grid2
+      expect(engine.getFocusedCell()!.gridId).toBe('grid2');
+
+      engine.cancelGrab();
+
+      // Focus should return to grid1 at original position
+      const focus = engine.getFocusedCell();
+      expect(focus).not.toBeNull();
+      expect(focus!.gridId).toBe('grid1');
+      expect(focus!.coords).toEqual({ column: 1, row: 1 });
+    });
+
+    it('focus follows through multiple moves', () => {
+      const engine = new GridEngine();
+      engine.registerGrid(makeGridConfig());
+      engine.setGridRendered('grid1', true);
+      engine.addItem(makeItem(), 'grid1', { column: 1, row: 1 });
+
+      engine.setFocusedGrid('grid1');
+      engine.setFocusedCell({ column: 1, row: 1 });
+      engine.grab('item1');
+
+      engine.moveGrabbed('right');
+      expect(engine.getFocusedCell()!.coords).toEqual({ column: 2, row: 1 });
+
+      engine.moveGrabbed('down');
+      expect(engine.getFocusedCell()!.coords).toEqual({ column: 2, row: 2 });
+
+      engine.moveGrabbed('left');
+      expect(engine.getFocusedCell()!.coords).toEqual({ column: 1, row: 2 });
+    });
+
+    it('drop preserves focus at item current position', () => {
+      const engine = new GridEngine();
+      engine.registerGrid(makeGridConfig());
+      engine.setGridRendered('grid1', true);
+      engine.addItem(makeItem(), 'grid1', { column: 1, row: 1 });
+
+      engine.setFocusedGrid('grid1');
+      engine.setFocusedCell({ column: 1, row: 1 });
+      engine.grab('item1');
+      engine.moveGrabbed('right');
+      engine.moveGrabbed('down');
+      engine.drop();
+
+      const focus = engine.getFocusedCell();
+      expect(focus).not.toBeNull();
+      expect(focus!.coords).toEqual({ column: 2, row: 2 });
+    });
+
+    it('selectedStackIndex resets when focus follows item', () => {
+      const engine = new GridEngine();
+      engine.registerGrid(makeGridConfig({ allowStacking: true }));
+      engine.setGridRendered('grid1', true);
+      engine.addItem(makeItem({ id: 'a' }), 'grid1', { column: 1, row: 1 });
+      engine.addItem(makeItem({ id: 'b' }), 'grid1', { column: 1, row: 1 });
+
+      engine.setFocusedGrid('grid1');
+      engine.setFocusedCell({ column: 1, row: 1 });
+      engine.cycleStackSelection('next');
+      expect(engine.getSelectedStackIndex()).not.toBeNull();
+
+      // Grab item 'a' (it's in the stack) and move it
+      engine.grab('a');
+      engine.moveGrabbed('right');
+
+      expect(engine.getSelectedStackIndex()).toBeNull();
+    });
+  });
+
+  // ═══════════════════════════════════════════════════════════════════════
   // Stack Selection Cycling
   // ═══════════════════════════════════════════════════════════════════════
 
