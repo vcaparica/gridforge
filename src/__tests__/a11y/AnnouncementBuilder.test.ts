@@ -117,6 +117,14 @@ function makeEventForType(type: GridEventType): GridEvent {
         toGrid: 'grid-1',
         gridId: 'grid-1',
       } as GridEvent;
+    case 'stackSelectionChanged':
+      return {
+        ...base,
+        item,
+        itemId: 'item-1',
+        gridId: 'grid-1',
+        selectedStackIndex: 0,
+      } as GridEvent;
     case 'gridRegistered':
     case 'gridUnregistered':
     case 'gridRenderStateChanged':
@@ -149,6 +157,7 @@ describe('AnnouncementBuilder', () => {
       'grabCancelled',
       'moveBlocked',
       'focusMoved',
+      'stackSelectionChanged',
       'gridRegistered',
       'gridUnregistered',
       'gridRenderStateChanged',
@@ -171,6 +180,7 @@ describe('AnnouncementBuilder', () => {
       'itemTransferred',
       'itemRemoved',
       'itemPlaced',
+      'stackSelectionChanged',
     ];
 
     it.each(assertiveTypes)('%s has assertive priority', (eventType) => {
@@ -206,6 +216,7 @@ describe('AnnouncementBuilder', () => {
       'grabCancelled',
       'moveBlocked',
       'focusMoved',
+      'stackSelectionChanged',
     ];
 
     it.each(nonEmptyTypes)('%s produces non-empty text', (eventType) => {

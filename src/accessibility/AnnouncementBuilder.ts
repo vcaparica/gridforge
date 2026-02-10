@@ -27,6 +27,7 @@ const ASSERTIVE_EVENTS = new Set([
   'itemTransferred',
   'itemRemoved',
   'itemPlaced',
+  'stackSelectionChanged',
 ]);
 
 const POLITE_EVENTS = new Set([
@@ -134,6 +135,8 @@ export class AnnouncementBuilder {
         return this.buildGrabCancelled(event);
       case 'moveBlocked':
         return this.buildMoveBlocked(event, engine);
+      case 'stackSelectionChanged':
+        return this.buildStackSelectionChanged(event, engine);
       case 'focusMoved':
         return this.buildFocusMoved(event, engine);
       case 'gridRegistered':
@@ -390,6 +393,19 @@ export class AnnouncementBuilder {
 
     // Fallback for unknown/missing reason
     return this.catalog.moveBlockedOutOfBounds;
+  }
+
+  // -----------------------------------------------------------------------
+  // stackSelectionChanged
+  // -----------------------------------------------------------------------
+
+  private buildStackSelectionChanged(event: GridEvent, engine: GridEngineReadonly): string {
+    const item = event.item ?? (event.itemId ? engine.getItem(event.itemId) : undefined);
+    if (!item) return '';
+
+    return interpolate(this.catalog.stackSelectionChanged, {
+      itemLabel: item.label,
+    });
   }
 
   // -----------------------------------------------------------------------

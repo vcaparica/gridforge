@@ -53,6 +53,9 @@ export interface MessageCatalog {
   itemTransferred: string;
   itemTransferredFromNonRendered: string;
 
+  // Stack selection
+  stackSelectionChanged: string;
+
   // Grid cycling during grab
   gridCycled: string;
 
@@ -136,6 +139,10 @@ export const DEFAULT_MESSAGES: MessageCatalog = {
     '{itemLabel} sent to {targetGridLabel}, Column {col}, Row {row}.',
   itemTransferredFromNonRendered:
     '{itemLabel} arrived from {sourceGridLabel} at Column {col}, Row {row}.',
+
+  // Stack selection
+  stackSelectionChanged:
+    '{itemLabel} selected.',
 
   // Grid cycling during grab
   gridCycled:
