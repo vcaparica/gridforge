@@ -50,7 +50,23 @@ export function useGridKeyboard(
         }
 
         case 'drop': {
-          engine.drop();
+          // If focus is on a different grid than the grabbed item,
+          // move the item to the focused cell first, then drop.
+          const grabbedForDrop = state.grabbedItemId
+            ? engine.getItem(state.grabbedItemId)
+            : null;
+          if (
+            grabbedForDrop &&
+            grabbedForDrop.gridId !== gridId &&
+            state.focusedCell
+          ) {
+            const moveResult = engine.moveGrabbedTo(gridId, state.focusedCell);
+            if (moveResult.success) {
+              engine.drop();
+            }
+          } else {
+            engine.drop();
+          }
           event.preventDefault();
           break;
         }
@@ -62,7 +78,20 @@ export function useGridKeyboard(
         }
 
         case 'moveGrabbed': {
-          engine.moveGrabbed(action.direction);
+          // If focus is on a different grid than the grabbed item,
+          // navigate focus instead so the user can browse destination
+          // cells before dropping.
+          const grabbedForMove = state.grabbedItemId
+            ? engine.getItem(state.grabbedItemId)
+            : null;
+          if (grabbedForMove && grabbedForMove.gridId !== gridId) {
+            if (state.focusedGridId !== gridId) {
+              engine.setFocusedGrid(gridId);
+            }
+            engine.moveFocus(action.direction);
+          } else {
+            engine.moveGrabbed(action.direction);
+          }
           event.preventDefault();
           break;
         }
@@ -153,20 +182,11 @@ export function useGridKeyboard(
           }
 
           const nextGrid = renderedGrids[nextIndex];
-          // During grabbing, update the active drop target grid and move the
-          // grabbed item to the new grid at its current coordinates (clamped
-          // to the target grid bounds).
-          if (state.grabbedItemId !== null) {
-            const grabbedItem = engine.getItem(state.grabbedItemId);
-            if (grabbedItem) {
-              const targetConfig = nextGrid.config;
-              const clampedCoords = {
-                column: Math.min(grabbedItem.coordinates.column, targetConfig.columns),
-                row: Math.min(grabbedItem.coordinates.row, targetConfig.rows),
-              };
-              engine.moveGrabbedTo(nextGrid.config.id, clampedCoords);
-            }
-          }
+          // Move focus to the next grid without moving the grabbed item.
+          // The user can then browse cells with arrow keys and drop with
+          // Enter/Space.
+          engine.setFocusedGrid(nextGrid.config.id);
+          engine.setFocusedCell({ column: 1, row: 1 });
 
           event.preventDefault();
           break;

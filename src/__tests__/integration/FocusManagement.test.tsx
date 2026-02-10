@@ -22,10 +22,10 @@ describe('Focus Management', () => {
       ],
     });
 
-    // Before focusing, no cell should be actively focused (tabindex=0) since
-    // the grid hasn't received focus yet
+    // Before focusing, cell (1,1) should be the tab target (tabindex=0) so
+    // the grid is reachable via Tab without the container being a tab stop.
     const cell11Before = getCellAt('grid1', 1, 1)!;
-    expect(cell11Before.getAttribute('tabindex')).toBe('-1');
+    expect(cell11Before.getAttribute('tabindex')).toBe('0');
 
     // Focus the grid
     focusGrid('grid1');

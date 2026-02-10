@@ -189,7 +189,7 @@ export const ItemTray: React.FC<ItemTrayProps> = ({
       ref={containerRef}
       {...ariaProps}
       role="listbox"
-      tabIndex={0}
+      tabIndex={-1}
       className={classes}
       style={trayStyle}
       onKeyDown={onKeyDown}

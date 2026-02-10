@@ -40,6 +40,14 @@ export function useCell(gridId: string, coords: Coordinates): {
     state.focusedCell !== null &&
     CoordinateSystem.equals(state.focusedCell, coords);
 
+  // Roving tabindex: when this grid is NOT the focused grid, cell (1,1)
+  // must still have tabIndex="0" so the grid remains reachable via Tab/Shift+Tab.
+  const isTabTarget =
+    !isFocused &&
+    state.focusedGridId !== gridId &&
+    coords.column === 1 &&
+    coords.row === 1;
+
   const isGrabSource =
     state.grabbedItemId !== null &&
     items.some((item) => item.id === state.grabbedItemId);
@@ -61,8 +69,9 @@ export function useCell(gridId: string, coords: Coordinates): {
         isDropTarget,
         gridType,
         selectedStackIndex,
+        isTabTarget,
       ),
-    [cell, items, isFocused, isGrabSource, isDropTarget, gridType, selectedStackIndex],
+    [cell, items, isFocused, isGrabSource, isDropTarget, gridType, selectedStackIndex, isTabTarget],
   );
 
   return {

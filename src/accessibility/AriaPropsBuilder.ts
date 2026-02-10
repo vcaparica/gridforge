@@ -69,6 +69,7 @@ export class AriaPropsBuilder {
     isDropTarget: boolean,
     gridType: GridType,
     selectedStackIndex?: number | null,
+    isTabTarget?: boolean,
   ): Record<string, string> {
     const { column, row } = cell.coordinates;
     const props: Record<string, string> = {};
@@ -90,8 +91,8 @@ export class AriaPropsBuilder {
     // Compute the aria-label
     props['aria-label'] = AriaPropsBuilder.buildCellLabel(cell, items, gridType, selectedStackIndex);
 
-    // tabindex: "0" for the focused cell, "-1" for all others
-    props['tabIndex'] = isFocused ? '0' : '-1';
+    // tabindex: "0" for the focused cell or the grid's tab-target cell, "-1" for all others
+    props['tabIndex'] = (isFocused || isTabTarget) ? '0' : '-1';
 
     // aria-selected for grab source or drop target (NOT aria-grabbed, which is deprecated)
     if (isGrabSource || isDropTarget) {

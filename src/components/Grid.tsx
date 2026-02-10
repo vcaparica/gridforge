@@ -208,7 +208,7 @@ export const Grid: React.FC<GridProps> = ({
         ref={containerRef}
         {...ariaProps}
         role="grid"
-        tabIndex={0}
+        tabIndex={-1}
         className={`gf-grid ${className || ''}`.trim()}
         style={gridStyle}
         onKeyDown={onKeyDown}
@@ -258,7 +258,7 @@ export const Grid: React.FC<GridProps> = ({
       ref={containerRef}
       {...listboxProps}
       role="listbox"
-      tabIndex={0}
+      tabIndex={-1}
       className={`gf-grid ${className || ''}`.trim()}
       style={gridStyle}
       onKeyDown={onKeyDown}
