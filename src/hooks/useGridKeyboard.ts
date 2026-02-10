@@ -52,19 +52,19 @@ export function useGridKeyboard(
         case 'drop': {
           // If focus is on a different grid than the grabbed item,
           // move the item to the focused cell first, then drop.
-          // Use engine's focusedGridId (updated immediately) rather than
-          // gridId (the DOM event source) to handle the case where DOM
-          // focus hasn't caught up to the engine state yet.
-          const dropTargetGrid = state.focusedGridId ?? gridId;
-          const grabbedForDrop = state.grabbedItemId
-            ? engine.getItem(state.grabbedItemId)
+          // Read from engine.getState() (mutated synchronously) rather
+          // than the React snapshot which can lag behind by a render.
+          const engineDrop = engine.getState();
+          const dropTargetGrid = engineDrop.focusedGridId ?? gridId;
+          const grabbedForDrop = engineDrop.grabbedItemId
+            ? engine.getItem(engineDrop.grabbedItemId)
             : null;
           if (
             grabbedForDrop &&
             grabbedForDrop.gridId !== dropTargetGrid &&
-            state.focusedCell
+            engineDrop.focusedCell
           ) {
-            const moveResult = engine.moveGrabbedTo(dropTargetGrid, state.focusedCell);
+            const moveResult = engine.moveGrabbedTo(dropTargetGrid, engineDrop.focusedCell);
             if (moveResult.success) {
               engine.drop();
             }
@@ -84,12 +84,12 @@ export function useGridKeyboard(
         case 'moveGrabbed': {
           // If the engine's focused grid differs from the grabbed item's
           // grid, navigate focus instead so the user can browse destination
-          // cells before dropping.  We use state.focusedGridId (updated
-          // immediately) rather than gridId (the DOM event source) to
-          // handle the case where DOM focus hasn't caught up yet.
-          const focusedGrid = state.focusedGridId ?? gridId;
-          const grabbedForMove = state.grabbedItemId
-            ? engine.getItem(state.grabbedItemId)
+          // cells before dropping.  Read from engine.getState() (mutated
+          // synchronously) rather than the React snapshot which can lag.
+          const engineMove = engine.getState();
+          const focusedGrid = engineMove.focusedGridId ?? gridId;
+          const grabbedForMove = engineMove.grabbedItemId
+            ? engine.getItem(engineMove.grabbedItemId)
             : null;
           if (grabbedForMove && grabbedForMove.gridId !== focusedGrid) {
             engine.moveFocus(action.direction);
@@ -173,10 +173,11 @@ export function useGridKeyboard(
             break;
           }
 
-          // Use engine's focusedGridId (updated immediately) rather than
-          // gridId (the DOM event source) so rapid Tab presses cycle
-          // correctly even before DOM focus has caught up.
-          const currentGridId = state.focusedGridId ?? gridId;
+          // Read focusedGridId from engine.getState() (mutated
+          // synchronously) rather than the React snapshot, which can lag
+          // behind by one or more render cycles.  This ensures rapid Tab
+          // presses always advance to the correct next grid.
+          const currentGridId = engine.getState().focusedGridId ?? gridId;
           const currentIndex = renderedGrids.findIndex(
             (g) => g.config.id === currentGridId,
           );
