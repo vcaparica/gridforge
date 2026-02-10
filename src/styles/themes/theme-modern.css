@@ -1,0 +1,159 @@
+/**
+ * GridForge Theme: Modern
+ * Clean, minimal light UI. Flat design with subtle shadows.
+ * Well-suited for inventory screens, kanban boards, and productivity UIs.
+ *
+ * Usage: import alongside the base gridforge.css stylesheet.
+ *   <link rel="stylesheet" href="gridforge.css">
+ *   <link rel="stylesheet" href="themes/theme-modern.css">
+ */
+
+:root {
+  /* Grid */
+  --gf-grid-bg: #ffffff;
+  --gf-grid-border-radius: 8px;
+  --gf-grid-padding: 12px;
+  --gf-grid-shadow: 0 1px 3px rgba(0, 0, 0, 0.08),
+                     0 0 0 1px rgba(0, 0, 0, 0.04);
+
+  /* Cells */
+  --gf-cell-bg: #f9fafb;
+  --gf-cell-border: 1px solid #e5e7eb;
+  --gf-cell-border-radius: 6px;
+  --gf-cell-hover-bg: #f3f4f6;
+  --gf-cell-hover-border: 1px solid #d1d5db;
+
+  /* Focus — blue ring, clean and minimal */
+  --gf-focus-ring: 0 0 0 2px #3b82f6;
+  --gf-focus-ring-offset: 1px;
+
+  /* Drop targets — soft blue highlight */
+  --gf-drop-target-bg: #eff6ff;
+  --gf-drop-target-border: 2px solid rgba(59, 130, 246, 0.5);
+  --gf-drop-target-glow: 0 0 0 transparent;
+
+  /* Invalid drop — soft red */
+  --gf-drop-invalid-border: 2px solid rgba(239, 68, 68, 0.45);
+  --gf-drop-invalid-glow: 0 0 0 transparent;
+
+  /* Grabbed item — blue outline, flat style */
+  --gf-grabbed-opacity: 0.7;
+  --gf-grabbed-outline: 2px dashed rgba(59, 130, 246, 0.6);
+  --gf-grabbed-scale: 1.03;
+  --gf-grabbed-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+  /* Item / Card */
+  --gf-item-border-radius: 6px;
+  --gf-item-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --gf-item-hover-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  /* Card back — neutral gray */
+  --gf-card-back-bg: linear-gradient(135deg, #e5e7eb, #d1d5db);
+  --gf-card-back-pattern: none;
+
+  /* Blocked cells — light gray stripes */
+  --gf-blocked-bg: repeating-linear-gradient(
+    45deg,
+    rgba(0, 0, 0, 0.03),
+    rgba(0, 0, 0, 0.03) 4px,
+    transparent 4px,
+    transparent 8px
+  );
+  --gf-blocked-opacity: 0.5;
+
+  /* Typography — clean system font */
+  --gf-font-family: "Inter", system-ui, -apple-system, sans-serif;
+}
+
+/* Minimal grid — thin outer border only */
+.gf-grid {
+  border: 1px solid #e5e7eb;
+}
+
+/* Grid lines — thin, barely visible */
+.gf-grid-lines {
+  background-image:
+    linear-gradient(
+      to right,
+      rgba(0, 0, 0, 0.04) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.04) 1px,
+      transparent 1px
+    );
+}
+
+/* Context menu — clean white card */
+.gf-context-menu {
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  color: #1f2937;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1),
+              0 0 0 1px rgba(0, 0, 0, 0.03);
+}
+
+.gf-context-menu__item:hover,
+.gf-context-menu__item:focus-visible {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.gf-context-menu__item--active {
+  background: rgba(59, 130, 246, 0.08);
+  color: #2563eb;
+}
+
+.gf-context-menu__item--active:hover,
+.gf-context-menu__item--active:focus-visible {
+  background: rgba(59, 130, 246, 0.14);
+}
+
+.gf-context-menu__separator {
+  background: #e5e7eb;
+}
+
+.gf-context-menu__shortcut {
+  color: #9ca3af;
+}
+
+/* Help dialog — clean white card */
+.gf-help-dialog {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.gf-help-dialog > [role="dialog"],
+.gf-help-dialog > div {
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid #e5e7eb;
+  color: #1f2937;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12);
+}
+
+.gf-help-dialog__close {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.gf-help-dialog__close:hover,
+.gf-help-dialog__close:focus-visible {
+  background: #e5e7eb;
+  color: #1f2937;
+}
+
+/* Drop indicator — flat, no glow */
+.gf-drop-indicator--valid {
+  background: rgba(59, 130, 246, 0.05);
+}
+
+.gf-drop-indicator--invalid {
+  background: rgba(239, 68, 68, 0.05);
+}
+
+.gf-drop-indicator--stack {
+  border: 2px solid rgba(245, 158, 11, 0.5);
+  box-shadow: none;
+  background: rgba(245, 158, 11, 0.04);
+}

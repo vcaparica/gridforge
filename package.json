@@ -1,0 +1,82 @@
+{
+  "name": "gridforge",
+  "version": "0.1.0",
+  "description": "Accessible grid placement module for tokens, miniatures, and trading cards",
+  "type": "module",
+  "main": "dist/gridforge.cjs.js",
+  "module": "dist/gridforge.es.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/gridforge.es.js",
+      "require": "./dist/gridforge.cjs.js"
+    },
+    "./styles/*": "./src/styles/*"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc -b --noEmit",
+    "storybook": "storybook dev -p 6006",
+    "storybook:build": "storybook build"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0"
+  },
+  "dependencies": {
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@storybook/addon-essentials": "^8.6.14",
+    "@storybook/react": "^8.6.15",
+    "@storybook/react-vite": "^8.6.15",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/jest-axe": "^3.5.9",
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.2.5",
+    "@types/react-dom": "^19.2.3",
+    "@typescript-eslint/eslint-plugin": "^8.54.0",
+    "@typescript-eslint/parser": "^8.54.0",
+    "@vitejs/plugin-react": "^5.1.3",
+    "eslint": "^9.39.2",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.24",
+    "globals": "^16.5.0",
+    "jest-axe": "^10.0.0",
+    "jsdom": "^25.0.1",
+    "rollup-plugin-dts": "^6.3.0",
+    "storybook": "^8.6.15",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.46.4",
+    "vite": "^7.2.4",
+    "vitest": "^4.0.18"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "react",
+    "grid",
+    "drag-and-drop",
+    "accessible",
+    "a11y",
+    "vtt",
+    "tcg",
+    "trading-card",
+    "miniatures"
+  ],
+  "license": "MIT"
+}
