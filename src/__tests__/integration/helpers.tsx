@@ -74,6 +74,7 @@ interface TestGridProps {
   columns: number;
   rows: number;
   label: string;
+  allowStacking?: boolean;
 }
 
 export function TestGrid({
@@ -81,6 +82,7 @@ export function TestGrid({
   columns,
   rows,
   label,
+  allowStacking,
 }: TestGridProps) {
   return (
     <Grid
@@ -88,6 +90,7 @@ export function TestGrid({
       columns={columns}
       rows={rows}
       label={label}
+      allowStacking={allowStacking}
       renderCell={(coords, cellItems) =>
         defaultRenderCell(gridId, coords, cellItems)
       }
@@ -110,6 +113,7 @@ interface RenderGridOptions {
   label?: string;
   items?: TestItemDef[];
   conflictStrategy?: ConflictStrategy;
+  allowStacking?: boolean;
 }
 
 export function renderGrid(options: RenderGridOptions = {}): RenderResult {
@@ -120,6 +124,7 @@ export function renderGrid(options: RenderGridOptions = {}): RenderResult {
     label = 'Battle Map',
     items = [],
     conflictStrategy,
+    allowStacking,
   } = options;
 
   const engineRef: React.MutableRefObject<GridEngine | null> = { current: null };
@@ -132,6 +137,7 @@ export function renderGrid(options: RenderGridOptions = {}): RenderResult {
         columns={columns}
         rows={rows}
         label={label}
+        allowStacking={allowStacking}
       />
     </GridForgeProvider>,
   );

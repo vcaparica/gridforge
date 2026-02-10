@@ -48,6 +48,9 @@ export function useCell(gridId: string, coords: Coordinates): {
 
   const gridType: GridType = grid?.config.type ?? '2d';
 
+  // Pass selectedStackIndex only for the focused cell
+  const selectedStackIndex = isFocused ? state.selectedStackIndex : null;
+
   const ariaProps = useMemo(
     () =>
       AriaPropsBuilder.cellProps(
@@ -57,8 +60,9 @@ export function useCell(gridId: string, coords: Coordinates): {
         isGrabSource,
         isDropTarget,
         gridType,
+        selectedStackIndex,
       ),
-    [cell, items, isFocused, isGrabSource, isDropTarget, gridType],
+    [cell, items, isFocused, isGrabSource, isDropTarget, gridType, selectedStackIndex],
   );
 
   return {

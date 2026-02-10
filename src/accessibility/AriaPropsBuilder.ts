@@ -68,6 +68,7 @@ export class AriaPropsBuilder {
     isGrabSource: boolean,
     isDropTarget: boolean,
     gridType: GridType,
+    selectedStackIndex?: number | null,
   ): Record<string, string> {
     const { column, row } = cell.coordinates;
     const props: Record<string, string> = {};
@@ -87,7 +88,7 @@ export class AriaPropsBuilder {
     }
 
     // Compute the aria-label
-    props['aria-label'] = AriaPropsBuilder.buildCellLabel(cell, items, gridType);
+    props['aria-label'] = AriaPropsBuilder.buildCellLabel(cell, items, gridType, selectedStackIndex);
 
     // tabindex: "0" for the focused cell, "-1" for all others
     props['tabIndex'] = isFocused ? '0' : '-1';
@@ -175,6 +176,7 @@ export class AriaPropsBuilder {
     cell: CellState,
     items: ItemState[],
     gridType: GridType,
+    selectedStackIndex?: number | null,
   ): string {
     const { column, row } = cell.coordinates;
 
@@ -203,6 +205,19 @@ export class AriaPropsBuilder {
       content = `${items.length} items: ${labels}`;
     }
 
-    return `${position}. ${content}.`;
+    let label = `${position}. ${content}.`;
+
+    // Append selected item name when cycling through a stack
+    if (
+      selectedStackIndex !== null &&
+      selectedStackIndex !== undefined &&
+      items.length > 1 &&
+      selectedStackIndex >= 0 &&
+      selectedStackIndex < items.length
+    ) {
+      label += ` ${items[selectedStackIndex].label} selected.`;
+    }
+
+    return label;
   }
 }

@@ -184,6 +184,27 @@ describe('Announcements', () => {
     expect(announcer.textContent).toContain('face up');
   });
 
+  it('announces when cycling stack selection with [ key', async () => {
+    renderGrid({
+      allowStacking: true,
+      items: [
+        { id: 'goblin', label: 'Goblin', gridId: 'grid1', column: 1, row: 1 },
+        { id: 'dragon', label: 'Dragon', gridId: 'grid1', column: 1, row: 1 },
+      ],
+    });
+
+    const grid = focusGrid('grid1');
+
+    // Cycle stack selection with [
+    pressKey(grid, '[');
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(200);
+    });
+
+    const announcer = getAssertiveAnnouncer()!;
+    expect(announcer.textContent).toContain('selected');
+  });
+
   it('announcements are cleared after 3 seconds', async () => {
     renderGrid({
       items: [
