@@ -1,6 +1,5 @@
 import {
   renderGrid,
-  getGridContainer,
   getItemElement,
   pressKey,
   focusGrid,

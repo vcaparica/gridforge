@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { render, act, type RenderResult } from '@testing-library/react';
 import { GridForgeProvider } from '../../components/GridForgeProvider.tsx';
 import { Grid } from '../../components/Grid.tsx';
@@ -61,7 +61,7 @@ function EngineExposer({
   engineRef: React.MutableRefObject<GridEngine | null>;
 }) {
   const { engine } = useGridForge();
-  engineRef.current = engine;
+  useEffect(() => { engineRef.current = engine; });
   return null;
 }
 

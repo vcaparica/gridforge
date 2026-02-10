@@ -5,6 +5,7 @@ export type AnnounceFn = (announcement: Announcement) => void;
 
 const AnnounceContext = createContext<AnnounceFn | null>(null);
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAnnounce(): AnnounceFn {
   const ctx = useContext(AnnounceContext);
   if (!ctx) {

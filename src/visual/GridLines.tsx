@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useId, useMemo } from 'react';
 import type { CSSProperties } from 'react';
 
 // ---------------------------------------------------------------------------
@@ -71,10 +71,11 @@ export const GridLines: React.FC<GridLinesProps> = ({
   const config = VARIANT_CONFIGS[variant];
 
   // Generate a stable pattern ID to avoid collisions when multiple GridLines
-  // are on the same page.
+  // are on the same page. useId is pure and React-safe.
+  const reactId = useId();
   const patternId = useMemo(
-    () => `gf-grid-pattern-${variant}-${columns}x${rows}-${Math.random().toString(36).slice(2, 8)}`,
-    [variant, columns, rows],
+    () => `gf-grid-pattern-${variant}-${columns}x${rows}-${reactId}`,
+    [variant, columns, rows, reactId],
   );
 
   // Each cell is represented as one pattern unit. The viewBox and pattern

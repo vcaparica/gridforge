@@ -7,7 +7,7 @@ import { ItemTray } from '../src/components/ItemTray.tsx';
 import { Cell } from '../src/components/Cell.tsx';
 import { Item } from '../src/components/Item.tsx';
 import { useGridForge } from '../src/hooks/useGridForge.ts';
-import type { Coordinates, ItemState } from '../src/core/types.ts';
+import type { Coordinates } from '../src/core/types.ts';
 
 // ---------------------------------------------------------------------------
 // Data

@@ -40,7 +40,7 @@ function TwoGridSetup({
   engineRef: React.MutableRefObject<GridEngine | null>;
 }) {
   const { engine } = useGridForge();
-  engineRef.current = engine;
+  useEffect(() => { engineRef.current = engine; });
 
   return (
     <>
@@ -113,7 +113,7 @@ function OffScreenSetup({
   engineRef: React.MutableRefObject<GridEngine | null>;
 }) {
   const { engine } = useGridForge();
-  engineRef.current = engine;
+  useEffect(() => { engineRef.current = engine; });
 
   useEffect(() => {
     if (!engine.getGrid('offscreen')) {

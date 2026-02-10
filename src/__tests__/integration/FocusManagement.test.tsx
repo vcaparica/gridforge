@@ -1,5 +1,5 @@
 import { screen } from '@testing-library/react';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { render, act } from '@testing-library/react';
 import { GridForgeProvider } from '../../components/GridForgeProvider.tsx';
 import { Grid } from '../../components/Grid.tsx';

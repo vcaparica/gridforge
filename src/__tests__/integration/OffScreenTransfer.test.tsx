@@ -39,10 +39,10 @@ function OffScreenSetup({ engineRef, showGrid2Ref }: OffScreenSetupProps) {
   const { engine } = useGridForge();
   const [showGrid2, setShowGrid2] = useState(false);
 
-  // Expose engine and toggle during render (not in effect) so they're
-  // available immediately after render() returns.
-  engineRef.current = engine;
-  showGrid2Ref.current = () => setShowGrid2(true);
+  useEffect(() => {
+    engineRef.current = engine;
+    showGrid2Ref.current = () => setShowGrid2(true);
+  });
 
   useEffect(() => {
     // Register grid2 but do NOT render it yet
@@ -200,7 +200,7 @@ describe('Off-Screen Transfer', () => {
     });
 
     // Item gone from grid1
-    let cell11 = getCellAt('grid1', 1, 1)!;
+    const cell11 = getCellAt('grid1', 1, 1)!;
     expect(cell11.querySelector('[data-gf-item-id="goblin"]')).toBeNull();
 
     // Transfer back to grid1

@@ -271,6 +271,7 @@ export function ContextMenu({
       className="gf-context-menu"
       role="menu"
       ref={menuRef}
+      tabIndex={-1}
       onKeyDown={handleKeyDown}
       style={{
         position: 'absolute',
@@ -302,6 +303,7 @@ export function ContextMenu({
             role="menuitem"
             tabIndex={currentIndex === activeIndex ? 0 : -1}
             onClick={() => entry.onActivate()}
+            onKeyDown={handleKeyDown}
             onMouseEnter={() => {
               setActiveIndex(currentIndex);
               const menu = menuRef.current;

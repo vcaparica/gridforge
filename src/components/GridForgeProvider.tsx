@@ -30,6 +30,7 @@ export interface GridForgeContextValue {
   messageCatalog: MessageCatalog;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const GridForgeContext = createContext<GridForgeContextValue | null>(null);
 
 // ---------------------------------------------------------------------------
@@ -232,23 +233,25 @@ const GridForgeProviderInner: React.FC<GridForgeProviderProps> = ({
     onItemTransferred,
     onGrabCancelled,
   });
-  callbacksRef.current = {
-    onItemMoved,
-    onItemDropped,
-    onItemRemoved,
-    onItemGrabbed,
-    onItemTapped,
-    onItemFlipped,
-    onItemTransferred,
-    onGrabCancelled,
-  };
+  useEffect(() => {
+    callbacksRef.current = {
+      onItemMoved,
+      onItemDropped,
+      onItemRemoved,
+      onItemGrabbed,
+      onItemTapped,
+      onItemFlipped,
+      onItemTransferred,
+      onGrabCancelled,
+    };
+  });
 
   // -- Stable ref for announce and builder so we don't re-subscribe ---------
   const announceRef = useRef(announce);
-  announceRef.current = announce;
+  useEffect(() => { announceRef.current = announce; });
 
   const builderRef = useRef(announcementBuilder);
-  builderRef.current = announcementBuilder;
+  useEffect(() => { builderRef.current = announcementBuilder; });
 
   // -- Subscribe to all engine events ---------------------------------------
   useEffect(() => {

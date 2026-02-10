@@ -183,6 +183,7 @@ export const Cell: React.FC<CellProps> = ({
     : children;
 
   return (
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions -- keyboard handled at Grid level per ARIA grid pattern
     <div
       ref={cellRef}
       id={cellId}

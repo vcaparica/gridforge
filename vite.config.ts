@@ -19,6 +19,7 @@ export default defineConfig({
       name: 'GridForge',
       formats: ['es', 'cjs'],
       fileName: (format) => `gridforge.${format === 'es' ? 'es' : 'cjs'}.js`,
+      cssFileName: 'gridforge',
     },
     rollupOptions: {
       external: ['react', 'react-dom', 'react/jsx-runtime'],
@@ -31,7 +32,6 @@ export default defineConfig({
       },
     },
     target: 'es2020',
-    cssFileName: 'gridforge.css',
   },
   test: {
     globals: true,

@@ -2,7 +2,6 @@ import { screen } from '@testing-library/react';
 import {
   renderGrid,
   getCellAt,
-  getGridContainer,
   pressKey,
   focusGrid,
 } from './helpers.tsx';

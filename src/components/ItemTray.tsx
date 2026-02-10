@@ -166,7 +166,7 @@ export const ItemTray: React.FC<ItemTrayProps> = ({
 
       if (minItemSize !== undefined && needsShrink) {
         // Items will be sized via CSS on the children
-        base['--gf-tray-min-item-size' as string] = `${minItemSize}px`;
+        (base as Record<string, string>)['--gf-tray-min-item-size'] = `${minItemSize}px`;
       }
     }
 
@@ -188,6 +188,7 @@ export const ItemTray: React.FC<ItemTrayProps> = ({
     <div
       ref={containerRef}
       {...ariaProps}
+      role="listbox"
       tabIndex={0}
       className={classes}
       style={trayStyle}

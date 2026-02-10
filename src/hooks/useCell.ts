@@ -25,10 +25,13 @@ export function useCell(gridId: string, coords: Coordinates): {
   const key = CoordinateSystem.toKey(coords);
   const grid = state.grids.get(gridId);
 
-  const cell: CellState = grid?.cells.get(key) ?? {
-    ...EMPTY_CELL,
-    coordinates: { column: coords.column, row: coords.row },
-  };
+  const cell: CellState = useMemo(
+    () => grid?.cells.get(key) ?? {
+      ...EMPTY_CELL,
+      coordinates: { column: coords.column, row: coords.row },
+    },
+    [grid, key, coords.column, coords.row],
+  );
 
   const items = engine.getItemsAt(gridId, coords);
 

@@ -58,8 +58,8 @@ export const Grid: React.FC<GridProps> = ({
   const prevBlockedKeysRef = useRef<Set<string>>(new Set());
 
   // -- Help dialog and context menu state -----------------------------------
-  const [_showHelp, setShowHelp] = useState(false);
-  const [_contextMenuTarget, setContextMenuTarget] = useState<string | null>(null);
+  const [, setShowHelp] = useState(false);
+  const [, setContextMenuTarget] = useState<string | null>(null);
 
   const handleShowHelp = useCallback(() => {
     setShowHelp((prev) => !prev);
@@ -207,6 +207,7 @@ export const Grid: React.FC<GridProps> = ({
       <div
         ref={containerRef}
         {...ariaProps}
+        role="grid"
         tabIndex={0}
         className={`gf-grid ${className || ''}`.trim()}
         style={gridStyle}
@@ -256,6 +257,7 @@ export const Grid: React.FC<GridProps> = ({
     <div
       ref={containerRef}
       {...listboxProps}
+      role="listbox"
       tabIndex={0}
       className={`gf-grid ${className || ''}`.trim()}
       style={gridStyle}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { render, screen, act } from '@testing-library/react';
 import { GridForgeProvider } from '../../components/GridForgeProvider.tsx';
 import { Grid } from '../../components/Grid.tsx';
@@ -35,7 +35,7 @@ function TwoGridSetup({
   engineRef: React.MutableRefObject<GridEngine | null>;
 }) {
   const { engine } = useGridForge();
-  engineRef.current = engine;
+  useEffect(() => { engineRef.current = engine; });
 
   return (
     <>

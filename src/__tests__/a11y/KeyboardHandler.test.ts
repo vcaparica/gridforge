@@ -1,6 +1,5 @@
 // @vitest-environment node
 import { resolveKeyAction } from '../../accessibility/KeyboardHandler.ts';
-import type { KeyAction } from '../../accessibility/KeyboardHandler.ts';
 
 // ---------------------------------------------------------------------------
 // Helper

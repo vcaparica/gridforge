@@ -2,7 +2,6 @@ import { screen } from '@testing-library/react';
 import {
   renderGrid,
   getCellAt,
-  getGridContainer,
   pressKey,
   focusGrid,
 } from './helpers.tsx';
@@ -32,7 +31,7 @@ describe('Grid Navigation', () => {
       ],
     });
 
-    const grid = focusGrid('grid1');
+    focusGrid('grid1');
 
     // The cell at (1,1) should now be focused (tabindex="0")
     const cell11 = getCellAt('grid1', 1, 1)!;

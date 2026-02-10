@@ -80,7 +80,7 @@ function TokenCircle({ id }: { id: string }) {
 // ---------------------------------------------------------------------------
 
 function BattleMapInner() {
-  const { engine, state } = useGridForge();
+  const { engine } = useGridForge();
 
   useEffect(() => {
     TOKENS.forEach((token) => {

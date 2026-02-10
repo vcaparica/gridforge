@@ -4,12 +4,11 @@ import '../src/styles/gridforge.css';
 import '../src/styles/themes/theme-felt.css';
 
 import { GridForgeProvider } from '../src/components/GridForgeProvider.tsx';
-import { Grid } from '../src/components/Grid.tsx';
 import { ItemTray } from '../src/components/ItemTray.tsx';
 import { Cell } from '../src/components/Cell.tsx';
 import { Item } from '../src/components/Item.tsx';
 import { useGridForge } from '../src/hooks/useGridForge.ts';
-import type { Coordinates, ItemState } from '../src/core/types.ts';
+import type { Coordinates } from '../src/core/types.ts';
 
 // ---------------------------------------------------------------------------
 // Card data
