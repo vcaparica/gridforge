@@ -1,0 +1,172 @@
+/**
+ * GridForge — Foil Card Effect
+ * A holographic / metallic foil shimmer inspired by Magic: the Gathering
+ * foil card treatments. Uses a two-layer pseudo-element compositing approach
+ * with pointer-driven CSS custom properties for dynamic light response.
+ *
+ * Technique adapted from simeydotme/pokemon-cards-css, tuned for the more
+ * subtle, metallic iridescence of MTG foils rather than Pokémon holo flash.
+ *
+ * Usage:
+ *   import 'gridforge/styles/foil.css';
+ *   <Item foil …>
+ *
+ * Layers:
+ *   ::before — Rainbow gradient film   (mix-blend-mode: color-dodge)
+ *   ::after  — Specular highlight      (mix-blend-mode: overlay)
+ */
+
+/* ==========================================================================
+   1. Registered Custom Properties (enables CSS transitions on custom props)
+   ========================================================================== */
+
+@property --gf-foil-x {
+  syntax: '<percentage>';
+  inherits: true;
+  initial-value: 50%;
+}
+
+@property --gf-foil-y {
+  syntax: '<percentage>';
+  inherits: true;
+  initial-value: 50%;
+}
+
+/* ==========================================================================
+   2. Foil Container
+   ========================================================================== */
+
+.gf-item--foil {
+  --gf-foil-x: 50%;
+  --gf-foil-y: 50%;
+  isolation: isolate;
+  transition:
+    --gf-foil-x 0.3s ease-out,
+    --gf-foil-y 0.3s ease-out;
+}
+
+/* ==========================================================================
+   3. Layer 1 — Rainbow Iridescent Film
+   Diagonal repeating rainbow bands with fine scan-line texture.
+   color-dodge blends the bright bands with the card art beneath,
+   while filter tuning keeps the effect metallic rather than neon.
+   ========================================================================== */
+
+.gf-item--foil:not(.gf-item--face-down)::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  border-radius: inherit;
+
+  background:
+    /* Fine horizontal scan lines — etched foil texture */
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.03) 0px,
+      rgba(255, 255, 255, 0.03) 1px,
+      transparent 1px,
+      transparent 4px
+    ),
+    /* Diagonal rainbow bands with dark gaps between colors */
+    repeating-linear-gradient(
+      133deg,
+      #0e152e   0%,
+      #1a1f35   3.5%,
+      #e44f26  10%,      /* Red-orange   */
+      #1a1f35  11.5%,
+      #f7db4f  13%,      /* Gold         */
+      #1a2341  14.5%,
+      #1a1f35  18%,
+      #43b883  19.5%,    /* Green        */
+      #1a1f35  21%,
+      #0e152e  25%,
+      #1a1f35  27%,
+      #326ed6  29.5%,    /* Blue         */
+      #1a1f35  31%,
+      #0e152e  33%,
+      #9b4dca  38.5%,    /* Violet       */
+      #1a1f35  40%,
+      #0e152e  43%
+    );
+
+  /* Scan lines at 1:1, rainbow over-sized 3× for parallax shift */
+  background-size: 100% 100%, 300% 300%;
+  background-position: 0 0, var(--gf-foil-x) var(--gf-foil-y);
+
+  /* Metallic filter — muted saturation, high contrast, slight dim */
+  filter: brightness(0.7) contrast(2.8) saturate(0.5);
+  mix-blend-mode: color-dodge;
+
+  opacity: 0.7;
+}
+
+/* ==========================================================================
+   4. Layer 2 — Specular Highlight (light hot-spot)
+   A radial glow that follows the pointer, simulating how physical foil
+   cards catch a point of light and scatter it.
+   ========================================================================== */
+
+.gf-item--foil:not(.gf-item--face-down)::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  border-radius: inherit;
+
+  background: radial-gradient(
+    farthest-corner at var(--gf-foil-x) var(--gf-foil-y),
+    rgba(255, 255, 255, 0.15) 0%,
+    rgba(255, 255, 255, 0.06) 25%,
+    transparent 55%
+  );
+
+  mix-blend-mode: overlay;
+}
+
+/* ==========================================================================
+   5. Idle Breathing Animation
+   Gentle opacity pulse when not hovered — gives the foil a "living" quality
+   without fighting pointer-driven background-position.
+   ========================================================================== */
+
+@keyframes gf-foil-breathe {
+  0%, 100% { opacity: 0.55; }
+  50%      { opacity: 0.75; }
+}
+
+.gf-item--foil:not(:hover):not(.gf-item--face-down)::before {
+  animation: gf-foil-breathe 4s ease-in-out infinite;
+}
+
+/* ==========================================================================
+   6. Accessibility — Reduced Motion
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .gf-item--foil {
+    transition: none;
+  }
+
+  .gf-item--foil:not(:hover):not(.gf-item--face-down)::before {
+    animation: none;
+  }
+
+  .gf-item--foil:not(.gf-item--face-down)::before {
+    opacity: 0.4;
+    background-position: 0 0, 50% 50%;
+  }
+}
+
+/* ==========================================================================
+   7. Accessibility — Forced Colors (Windows High Contrast)
+   ========================================================================== */
+
+@media (forced-colors: active) {
+  .gf-item--foil:not(.gf-item--face-down)::before,
+  .gf-item--foil:not(.gf-item--face-down)::after {
+    display: none;
+  }
+}

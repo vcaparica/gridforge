@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import '../src/styles/gridforge.css';
 import '../src/styles/themes/theme-felt.css';
+import '../src/styles/foil.css';
 
 import { GridForgeProvider } from '../src/components/GridForgeProvider.tsx';
 import { Grid } from '../src/components/Grid.tsx';
@@ -24,6 +25,7 @@ interface CardDef {
   gridId: string;
   position: Coordinates;
   faceDown?: boolean;
+  foil?: boolean;
 }
 
 const CARD_COLORS: Record<CardType, string> = {
@@ -51,12 +53,12 @@ const CARDS: CardDef[] = [
   { id: 'card-lib-3', label: 'Unknown card', type: 'instant', gridId: 'library', position: { column: 3, row: 1 }, faceDown: true },
 
   // Hand
-  { id: 'card-bolt', label: 'Lightning Bolt', type: 'instant', gridId: 'hand', position: { column: 1, row: 1 } },
+  { id: 'card-bolt', label: 'Lightning Bolt', type: 'instant', gridId: 'hand', position: { column: 1, row: 1 }, foil: true },
   { id: 'card-forest1', label: 'Forest', type: 'land', gridId: 'hand', position: { column: 2, row: 1 } },
-  { id: 'card-dragon', label: 'Shivan Dragon', type: 'creature', gridId: 'hand', position: { column: 3, row: 1 } },
+  { id: 'card-dragon', label: 'Shivan Dragon', type: 'creature', gridId: 'hand', position: { column: 3, row: 1 }, foil: true },
   { id: 'card-giant', label: 'Giant Growth', type: 'instant', gridId: 'hand', position: { column: 4, row: 1 } },
   { id: 'card-forest2', label: 'Forest', type: 'land', gridId: 'hand', position: { column: 5, row: 1 } },
-  { id: 'card-llanowar', label: 'Llanowar Elves', type: 'creature', gridId: 'hand', position: { column: 6, row: 1 } },
+  { id: 'card-llanowar', label: 'Llanowar Elves', type: 'creature', gridId: 'hand', position: { column: 6, row: 1 }, foil: true },
   { id: 'card-counter', label: 'Counterspell', type: 'instant', gridId: 'hand', position: { column: 7, row: 1 } },
 
   // Battlefield
@@ -64,7 +66,7 @@ const CARDS: CardDef[] = [
   { id: 'card-bf-forest2', label: 'Forest', type: 'land', gridId: 'battlefield', position: { column: 2, row: 3 } },
   { id: 'card-bf-mountain', label: 'Mountain', type: 'land', gridId: 'battlefield', position: { column: 3, row: 3 } },
   { id: 'card-bf-elves', label: 'Elvish Mystic', type: 'creature', gridId: 'battlefield', position: { column: 1, row: 1 } },
-  { id: 'card-bf-enchant', label: 'Rancor', type: 'enchantment', gridId: 'battlefield', position: { column: 2, row: 1 } },
+  { id: 'card-bf-enchant', label: 'Rancor', type: 'enchantment', gridId: 'battlefield', position: { column: 2, row: 1 }, foil: true },
 
   // Graveyard
   { id: 'card-gy-shock', label: 'Shock', type: 'instant', gridId: 'graveyard', position: { column: 1, row: 1 } },
@@ -83,9 +85,10 @@ function CardVisual({ id }: { id: string }) {
 
   const borderColor = CARD_BORDER_COLORS[card.type];
   const bgColor = CARD_COLORS[card.type];
+  const accessibleLabel = card.foil ? `Foil - ${card.label}` : card.label;
 
   return (
-    <Item id={id} label={card.label} canTap={true}>
+    <Item id={id} label={accessibleLabel} canTap={true} foil={card.foil}>
       <div
         className="gf-card"
         style={{
@@ -169,12 +172,12 @@ function TCGPlaymatInner() {
       engine.addItem(
         {
           id: card.id,
-          label: card.label,
+          label: card.foil ? `Foil - ${card.label}` : card.label,
           canMove: true,
           canRemove: true,
           canTap: true,
           isFaceDown: card.faceDown ?? false,
-          metadata: { type: card.type },
+          metadata: { type: card.type, foil: card.foil ?? false },
         },
         card.gridId,
         card.position,
