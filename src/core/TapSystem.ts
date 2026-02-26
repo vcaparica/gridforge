@@ -3,18 +3,28 @@ import type { TapAngle } from './types.ts';
 export class TapSystem {
   static readonly ANGLES: TapAngle[] = [0, 45, 90, 135, 180, 225, 270, 315];
 
-  /** Rotate clockwise by 45 degrees (wraps 315 -> 0). */
-  static tapClockwise(current: TapAngle): TapAngle {
-    const index = TapSystem.ANGLES.indexOf(current);
-    return TapSystem.ANGLES[(index + 1) % TapSystem.ANGLES.length];
+  /**
+   * Rotate clockwise (wraps last -> first).
+   * Optional second arg: custom steps array, e.g. [0, 90].
+   * If current angle is not in the steps array, resets to steps[0].
+   */
+  static tapClockwise(current: TapAngle, steps?: TapAngle[]): TapAngle {
+    const angles = steps || TapSystem.ANGLES;
+    const index = angles.indexOf(current);
+    if (index === -1) return angles[0];
+    return angles[(index + 1) % angles.length];
   }
 
-  /** Rotate counter-clockwise by 45 degrees (wraps 0 -> 315). */
-  static tapCounterClockwise(current: TapAngle): TapAngle {
-    const index = TapSystem.ANGLES.indexOf(current);
-    return TapSystem.ANGLES[
-      (index - 1 + TapSystem.ANGLES.length) % TapSystem.ANGLES.length
-    ];
+  /**
+   * Rotate counter-clockwise (wraps first -> last).
+   * Optional second arg: custom steps array, e.g. [0, 90].
+   * If current angle is not in the steps array, resets to steps[0].
+   */
+  static tapCounterClockwise(current: TapAngle, steps?: TapAngle[]): TapAngle {
+    const angles = steps || TapSystem.ANGLES;
+    const index = angles.indexOf(current);
+    if (index === -1) return angles[0];
+    return angles[(index - 1 + angles.length) % angles.length];
   }
 
   /**

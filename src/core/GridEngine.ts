@@ -943,8 +943,10 @@ export class GridEngine implements GridEngineReadonly {
       return { success: false, error: `Item "${itemId}" cannot be tapped` };
     }
 
+    const grid = this.state.grids.get(item.gridId);
+    const steps = grid?.config.tapSteps;
     const previousTapAngle = item.tapAngle;
-    const newTapAngle = TapSystem.tapClockwise(previousTapAngle);
+    const newTapAngle = TapSystem.tapClockwise(previousTapAngle, steps);
     item.tapAngle = newTapAngle;
 
     const event = this.createEvent({
@@ -971,8 +973,10 @@ export class GridEngine implements GridEngineReadonly {
       return { success: false, error: `Item "${itemId}" cannot be tapped` };
     }
 
+    const grid = this.state.grids.get(item.gridId);
+    const steps = grid?.config.tapSteps;
     const previousTapAngle = item.tapAngle;
-    const newTapAngle = TapSystem.tapCounterClockwise(previousTapAngle);
+    const newTapAngle = TapSystem.tapCounterClockwise(previousTapAngle, steps);
     item.tapAngle = newTapAngle;
 
     const event = this.createEvent({
@@ -999,7 +1003,9 @@ export class GridEngine implements GridEngineReadonly {
       return { success: false, error: `Item "${itemId}" cannot be tapped` };
     }
 
-    if (!TapSystem.ANGLES.includes(angle)) {
+    const grid = this.state.grids.get(item.gridId);
+    const validAngles = grid?.config.tapSteps ?? TapSystem.ANGLES;
+    if (!validAngles.includes(angle) && !TapSystem.ANGLES.includes(angle)) {
       return { success: false, error: `Invalid tap angle: ${angle}` };
     }
 

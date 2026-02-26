@@ -55,6 +55,7 @@ export interface GridConfig {
   description?: string;
   allowStacking: boolean;          // can multiple items share a cell?
   maxStackSize?: number;           // limit items per cell (undefined = unlimited)
+  tapSteps?: TapAngle[];           // custom tap angle cycle, e.g. [0, 90] for binary tap
   sparse: boolean;                 // ALWAYS true — items can go anywhere
 }
 
